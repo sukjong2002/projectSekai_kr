@@ -138,13 +138,20 @@ class SekaiClient(object):
     def login(self):
         accessToken = self.getAccessToken(user.lid)
         data = self.calluserapi("/auth", "POST", {"accessToken": accessToken, "deviceId": None, "UserID": 0})
-        # print(data)
+        print(data)
         self.token = data["sessionToken"]
         self.headers["X-Session-Token"] = self.token
+        self.headers['X-App-Version'] = data['appVersion']
+        self.headers['X-Data-Version'] = data['dataVersion']
+        self.headers['X-Asset-Version'] = data['assetVersion']
         return self.token
     
     def get_profile(self, uid:str):
         data = self.calluserapi("/{}/profile".format(uid), "GET")
+        return data
+
+    def getRankingBorder(self, eventId:str):
+        data = self.callapi(apiurl='/event/{}/ranking-border'.format(eventId), method='GET', root=self.urlroot)
         return data
         
     def test(self):
@@ -163,11 +170,15 @@ user = SekaiUser(uuId, loginId, iid)
 sekai = SekaiClient(user)
 #  sekai.register()
 sekai.login()
-a = sekai.get_profile(friendId)
-print(a)
+# # a = sekai.get_profile(friendId)
+border = sekai.getRankingBorder('112')
+print(border)
 # # print(a)
 
+# b64 = 'eKbdHRyYccR85koELGNDEtfnZWiJx5r++qCKuFdsPak='
 # output = base64.b64decode(b64.encode())
+# data = sekai.callapi(apiurl='/system', method='GET', root=sekai.urlroot)
 # result = sekai.unpack(output)
+# print(data)
 # with open('output.json', 'w', encoding='utf-8') as f:
 #     json.dump(result, f, ensure_ascii=False, indent=4)
